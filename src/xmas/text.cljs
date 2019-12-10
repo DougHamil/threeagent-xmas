@@ -9,7 +9,8 @@
 (defonce pi js/Math.PI)
 (defonce pi2 (/ pi 2.0))
 
-(defonce default-font "indieflower/IndieFlower-Regular")
+;(defonce default-font "indieflower/IndieFlower-Regular")
+(defonce default-font "boogaloo/Boogaloo-Regular")
 ;(defonce default-font "patrickhandsc/PatrickHandSC-Regular")
 ;(defonce default-font "shadowsintolighttwo/ShadowsIntoLightTwo-Regular")
 (def ^:dynamic *text-material* nil)

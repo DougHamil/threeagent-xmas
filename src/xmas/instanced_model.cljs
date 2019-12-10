@@ -13,7 +13,7 @@
 (defonce ^:private meshes (atom {"example" 'i-mesh}))
 
 (def models ["candyCane"
-             ;"bench"
+             "bench"
              "cabinDoor"
              "cabinCorner"
              "cabinFloor"
@@ -31,6 +31,8 @@
              "candyCaneMint"
              "festivusPole"
              "lightsGreen"
+             "lightsRed"
+             "lightsMulti"
              "snowPatch"
              "treePine"
              "treePineSnow"

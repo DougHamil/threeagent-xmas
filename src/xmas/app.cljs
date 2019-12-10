@@ -5,10 +5,12 @@
             [xmas.host]
             [xmas.text :as text]
             [xmas.ui :as ui]
+            [xmas.game :as game]
             [xmas.instanced-model :as instanced-model]
             [xmas.state :refer [state]]
             [xmas.scene :as scene]
             [xmas.puzzle :as puzzle]
+            [xmas.particles :as particles]
             [oops.core :refer [oget oset!]]
             [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]
@@ -61,24 +63,25 @@
             :height 200}]])
 
 (defn camera []
-  (if-let [canvas @(th/cursor state [:canvas])]
-    (let [aspect (/ (.-height canvas)
-                    (.-width canvas))
-          width 50
-          height (* width aspect)]
-      [:object
-       [:perspective-camera {:position [0 35 40]
-                             :rotation [-0.5 0 0]
-                             :aspect (/ 1.0 aspect)
-                             :active true}]
-       [:orthographic-camera {:position [0 35 40]
-                              :rotation [-0.5 0 0]
-                              :left (- width)
-                              :right width
-                              :top height
-                              :bottom (- height)
-                              :active false}]])
-    [:object]))
+  (let [cam-pos @(th/cursor state [:camera-position])]
+    (if-let [canvas @(th/cursor state [:canvas])]
+      (let [aspect (/ (.-height canvas)
+                      (.-width canvas))
+            width 50
+            height (* width aspect)]
+        [:object
+         [:perspective-camera {:position cam-pos
+                               :rotation [-0.5 0 0]
+                               :aspect (/ 1.0 aspect)
+                               :active true}]
+         [:orthographic-camera {:position [0 35 40]
+                                :rotation [-0.5 0 0]
+                                :left (- width)
+                                :right width
+                                :top height
+                                :bottom (- height)
+                                :active false}]])
+      [:object])))
 
 
 
@@ -86,17 +89,22 @@
   [:object
    [camera]
    [lighting]
+   [particles/render]
    [scene/render]
    [puzzle/render]])
 
 (defn tick! [delta-time]
-  (swap! state update :time + delta-time))
+  (swap! state update :time + delta-time)
+  (particles/tick! delta-time)
+  (game/tick! delta-time))
 
 (defn ^:dev/after-load init []
   (ui/init!)
   (->
    (js/Promise.all [(instanced-model/init!)
-                    (text/init!)])
+                    (text/init!)
+                    (particles/init!)
+                    (game/init!)])
    (.then (fn []
             (let [ctx (th/render root
                                  (.getElementById js/document "root")

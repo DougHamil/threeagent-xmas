@@ -87,12 +87,8 @@
      [code-mirror (r/cursor state [:code]) {:style {:height "auto"}}]]]
    (when-let [error @(r/cursor state [:compile-error])]
      [:div error])
-   (when-let [diff @(r/cursor state [:puzzle-diff])]
-     [:div (str diff)])
    [:button {:on-click #(compile! (:code @state))}
-    "Compile"]
-   [:button {:on-click #((:reset-cb @state))}
-    "Reset Scene"]])
+    "Submit!"]])
 
 (defn init! []
   (r/render [root]

@@ -9,11 +9,17 @@
 (defonce ^:private v1 (three/Vector3.))
 (defonce ^:private v2 (three/Vector3.))
 
-(def ^:private puzzles {:snowman {:component 'snowman
-                                  :prompt "Can you finish the snowman?"}})
+(declare snowman)
+(declare present)
+
+(def ^:private puzzles {:snowman {:component #'snowman
+                                  :position [-3 0 -4]
+                                  :prompt "Can you finish the snowman?"}
+                        :present {:component #'present
+                                  :position [2 0 -2]
+                                  :prompt "Can you finish the present?"}})
 
 (swap! state assoc :puzzle (get puzzles :snowman))
-(swap! state assoc :puzzle-diff {:good #{} :bad #{}})
 
 (defn- vec3->vec [v]
   (vec (map #(oget+ v %)
@@ -53,26 +59,30 @@
   (let [{:keys [good bad]} @(th/cursor state [:puzzle-diff])
         color (if (and good (good id))
                 "green"
-                "red")]
+                "red")
+        opacity (if (and good (good id))
+                  0 0.2)]
     ^{:on-added (fn [o]
-                  (oset! o "userData.?itemId" id))}
+                  (oset! o "userData.!itemId" id))}
     [type (merge opts
                  {:material {:color color
-                             :opacity 0.2
+                             :opacity opacity
                              :flatShading true
                              :transparent true}})]))
 
 (defn snowman []
-  (let [{:keys [good bad]} @(th/cursor state [:puzzle-diff])]
-    ^{:on-added (fn [o]
-                  (.updateWorldMatrix o true)
-                  (swap! state assoc :puzzle-obj o))}
-    [:object 
-     [item "bottom" :sphere {}]
-     [item "mid" :sphere {:position [0 1 0]
-                          :scale [0.7 0.7 0.7]}]
-     [item "top" :sphere {:position [0 2 0]
-                          :scale [0.5 0.5 0.5]}]]))
+  ^{:on-added (fn [o] (swap! state assoc :puzzle-obj o))}
+  [:object
+   [item "bottom" :sphere {}]
+   [item "mid" :sphere {:position [0 1 0]
+                        :scale [0.7 0.7 0.7]}]
+   [item "top" :sphere {:position [0 2 0]
+                        :scale [0.5 0.5 0.5]}]])
+(defn present []
+  [:object
+   [item "box" :box {}]
+   [item "lid" :box {:scale [1.1 0.3 1.1]
+                     :position [0 0.5 0]}]])
 
 (defn- text [t c]
   [:text {:text t
@@ -84,32 +94,36 @@
   (let [hint-text @(th/cursor state [:puzzle :prompt])
         t @(th/cursor state [:time])]
     (if hint-text
-      (let [scale 1.2
+      (let [scale 1.8
             y-pos (js/Math.sin (* 2.0 t))]
         [:object {:position [-3 (+ 3 (/ y-pos 8.0)) 0]
                   :rotation [pi 0 0]
                   :scale [scale scale scale]}
-         [text hint-text 0x00B32C]
+         [text hint-text 0xFFFFFF] ;0x00B32C]
          [:object {:position [0.01 0 0.01]}
-          [text hint-text 0x00FF3E]]])
+          [text hint-text 0x000000]]]) ;0x00FF3E]]])
       [:object])))
 
 
 (defn- render-puzzle []
-   [snowman])
+  [:object
+   (for [[puzz-key puzzle] puzzles]
+     [:object {:position (:position puzzle)}
+      [(:component puzzle)]])])
 
 (defn- render-player-obj []
   [:object
-   (let [tick @(th/cursor state [:compile-tick])]
-     (let [c @(th/cursor state [:custom-comp])]
-       (when (some? c)
-         [:object
-          (with-meta (c) {:key tick
-                          :on-added (fn [a]
-                                      (.updateWorldMatrix a true)
-                                      (swap! state assoc :player-obj a)
-                                      (swap! state assoc :puzzle-diff (geo-diff (:puzzle-obj @state)
-                                                                                (:player-obj @state))))})])))])
+   (let [tick @(th/cursor state [:compile-tick])
+         c @(th/cursor state [:custom-comp])
+         puzz @(th/cursor state [:puzzle])]
+     (when (some? c)
+       [:object {:position (:position puzz)}
+        (with-meta (c) {:key tick
+                        :on-added (fn [a]
+                                    (.updateWorldMatrix a true)
+                                    (swap! state assoc :player-obj a)
+                                    (swap! state assoc :puzzle-diff (geo-diff (:puzzle-obj @state)
+                                                                              (:player-obj @state))))})]))])
 
 
 (defn render []
