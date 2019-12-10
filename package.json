@@ -1,0 +1,22 @@
+{
+  "name": "threeagent-xmas-tutorial",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "shadow-cljs": "2.8.42"
+  },
+  "scripts": {
+    "release": "npx shadow-cljs release app bootstrap && cp ./public/js/main.js ./docs/js/main.js && cp -r ./public/js/bootstrap ./docs/js && cp ./public/index.html ./docs/index.html && cp ./public/js/base.js ./docs/js/base.js && cp ./public/js/codemirror.js ./docs/js/codemirror.js && cp ./public/js/codemirror.css ./docs/js/codemirror.css && cp ./public/js/clojure_mode.js ./docs/js/clojure_mode.js && cp -r ./public/assets/ ./docs/assets/"
+  },
+  "dependencies": {
+    "@tweenjs/tween.js": "^17.3.0",
+    "create-react-class": "^15.6.3",
+    "postprocessing": "^6.2.1",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "three": "^0.111.0",
+    "three-bmfont-text": "^2.3.0",
+    "three-gltf-loader": "^1.103.0",
+    "three-instanced-mesh": "^0.96.2"
+  }
+}

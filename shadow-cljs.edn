@@ -1,0 +1,27 @@
+;; shadow-cljs configuration
+{:source-paths
+ ["src"]
+
+ :dependencies
+ [[cider/cider-nrepl "0.21.1"]
+  [org.clojure/core.async "0.4.490"]
+  [doughamil/threeagent "0.0.2-SNAPSHOT"]
+  [binaryage/oops "0.7.0"]]
+
+ :nrepl {:port 7888}
+
+ :builds
+ {:bootstrap {:target :bootstrap
+              :output-dir "public/js/bootstrap"
+              :entries [xmas.host]
+              :exclude #{cljs.js}}
+  :app
+  {:target :browser
+   :compiler-options {:infer-externs :auto
+                      :optimizations :simple}
+   :modules {:base {:entries [shadow.cljs.bootstrap.env]}
+             :main {:init-fn xmas.app/init
+                    :depends-on #{:base}}}
+   :devtools
+   {:http-root "public"
+    :http-port 8080}}}}
