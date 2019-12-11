@@ -79,7 +79,7 @@
         @value-atom
         [:div {:style style}])})))
 
-(defn root []
+(defn- editor [active-puzzle]
   (let [active-puzzle @(r/cursor state [:active-puzzle])
         hint @(r/cursor state [:active-puzzle-hint])
         _ @(r/cursor state [:puzzle-code active-puzzle])]
@@ -96,6 +96,10 @@
                                 code (get-in @state [:puzzle-code puzz])]
                             (compile! code))}
       "Submit!"]]))
+(defn root []
+  (if-let [active-puzzle @(r/cursor state [:active-puzzle])]
+    [editor active-puzzle]
+    [:h2 "Click on a red outline to create the missing object!"]))
 
 (defn init! []
   (r/render [root]

@@ -48,7 +48,7 @@
                                 :cam-position [0 8 20]
                                 :prompt "Train"}})
 
-(swap! state assoc :active-puzzle :snowman)
+;(swap! state assoc :active-puzzle :snowman)
 
 (defn- vec3->vec [v]
   (vec (map #(oget+ v %)
