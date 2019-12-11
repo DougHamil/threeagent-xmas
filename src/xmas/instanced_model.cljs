@@ -46,6 +46,10 @@
              "lightpost"
              "rockFormationLarge"
              "wreath"
+             "trainLocomotive"
+             "trainTender"
+             "trainWagon"
+             "trainWagonFlat"
              "sled"])
 
 

@@ -80,7 +80,4 @@
               :rotation [0 (+ pi 0.4) 0]
               :position [-8 0 0]}]
      [:model {:type "lightpost"
-              :position [-24 0 10]}]
-     [:model {:type "wreath"
-              :scale [0.5 0.5 0.5]
-              :position [10 19 1.0]}]]]])
+              :position [-24 0 10]}]]]])

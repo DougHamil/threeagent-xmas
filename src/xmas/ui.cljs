@@ -28,8 +28,8 @@
      (js/console.log "error:" (clj->js (:error s)))
      (js/setTimeout (fn []
                       (swap! state assoc :compile-error (:error s));(.. ^js (clj->js (:error s)) -cause -message)
-                      (swap! state assoc :custom-comp (:value s))
-                      (swap! state update :compile-tick inc))
+                      (swap! state assoc-in [:player-comps (:active-puzzle @state)] (:value s))
+                      (swap! state update-in [:compile-ticks (:active-puzzle @state)] inc))
                     0))))
 
 (defn code-mirror
@@ -80,15 +80,22 @@
         [:div {:style style}])})))
 
 (defn root []
-  [:div
-   [:div
-    @(r/cursor state [:active-puzzle :text])
+  (let [active-puzzle @(r/cursor state [:active-puzzle])
+        hint @(r/cursor state [:active-puzzle-hint])
+        _ @(r/cursor state [:puzzle-code active-puzzle])]
     [:div
-     [code-mirror (r/cursor state [:code]) {:style {:height "auto"}}]]]
-   (when-let [error @(r/cursor state [:compile-error])]
-     [:div error])
-   [:button {:on-click #(compile! (:code @state))}
-    "Submit!"]])
+     [:div
+      hint
+      [:div
+       ^{:key active-puzzle}
+       [code-mirror (r/cursor state [:puzzle-code active-puzzle])
+        {:style {:height "auto"}}]]]
+     (when-let [error @(r/cursor state [:compile-error])]
+       [:div error])
+     [:button {:on-click #(let [puzz (:active-puzzle @state)
+                                code (get-in @state [:puzzle-code puzz])]
+                            (compile! code))}
+      "Submit!"]]))
 
 (defn init! []
   (r/render [root]

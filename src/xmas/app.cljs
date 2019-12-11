@@ -5,6 +5,7 @@
             [xmas.host]
             [xmas.text :as text]
             [xmas.ui :as ui]
+            [xmas.interact :as interact]
             [xmas.game :as game]
             [xmas.instanced-model :as instanced-model]
             [xmas.state :refer [state]]
@@ -104,13 +105,15 @@
    (js/Promise.all [(instanced-model/init!)
                     (text/init!)
                     (particles/init!)
-                    (game/init!)])
+                    (game/init!)
+                    (interact/init!)])
    (.then (fn []
             (let [ctx (th/render root
                                  (.getElementById js/document "root")
                                  {:on-before-render tick!})
                   renderer (.-renderer ctx)]
               (swap! state assoc :canvas (.-canvas ctx))
+              (swap! state assoc :context ctx)
               (set! (.-enabled (.-shadowMap renderer)) true)
               (.setClearColor renderer sky-color))))))
 

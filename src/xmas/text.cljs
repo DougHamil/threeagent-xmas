@@ -22,12 +22,10 @@
         font-texture (:font-texture @state)
         s 0.012
         geo (get-geo {:width (or width 800)
-                      :align "left"
+                      :align "center"
                       :text text
                       :font font})
         color (three/Color. (or color 0xFEFEFE))
-        ;mat (three/RawShaderMaterial. (msdf-shader/create-shader 1.0 color font-texture))
-        ;mat (or *text-material* (msdf-shader/create-material-lit 1.0 (three/Color. 0xFFFFFF) font-texture))
         mat  (msdf-shader/create-material-lit 1.0 color font-texture)
         mesh (three/Mesh. geo mat)
         parent (three/Object3D.)]
